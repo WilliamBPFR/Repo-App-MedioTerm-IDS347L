@@ -11,24 +11,24 @@
 <body>
   <div class="container">
     <h1>Ingrese los datos del recordatorio</h1>
-    <form>
+    <form method="post" action="/posted-new-reminder">
       <div class="form-group">
-        <label for="recordatorio">Recordatorio:</label>
-        <input type="text" class="form-control" id="recordatorio" required>
+        <label for="titulo">Recordatorio:</label>
+        <input type="text" class="form-control" id="titulo" name="titulo"required>
       </div>
       <div class="form-group">
         <label for="descripcion">Descripción:</label>
-        <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+        <textarea class="form-control" id="descripcion" rows="3" name = "descripcion"required></textarea>
       </div>
       <div class="form-group">
         <label for="fecha">Fecha de recordatorio:</label>
-        <input type="date" class="form-control" id="fecha" required>
+        <input type="date" class="form-control" id="fecha" name = "fecha" required>
       </div>
       <div class="form-group">
         <label for="email">Correo electrónico:</label>
-        <input type="email" class="form-control" id="email" required>
+        <input type="email" class="form-control" id="email" name = "email" required>
       </div>
-      <button type="submit" class="btn btn-primary">Enviar</button>
+      <button type="submit" class="btn btn-primary" name="submit">Enviar</button>
 
     <div class="container">
       <button class="btn btn-dark btn-back" onclick="goBack()">Atrás</button>
@@ -51,6 +51,16 @@
         });
       </script>
 
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('data');
+        if(encodedData){
+        const decodedData = JSON.parse(decodeURIComponent(encodedData));
+        console.log(decodedData);
+        }else{
+          console.log('No data found');
+        }
+      </script>
 
     </form>
   </div>
