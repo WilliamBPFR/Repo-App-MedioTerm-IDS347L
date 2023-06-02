@@ -8,6 +8,7 @@ async function example (){
     Nota.email = "johnny.ventura@gmail.com";
     Nota.message = "palomo";
     Nota.fecha = "08/07/2023";
+    
 
     try {
         const product = await Nota.save();
