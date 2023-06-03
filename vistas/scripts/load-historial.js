@@ -11,8 +11,8 @@
        var div_buttons = document.createElement('div');
        var editar_button = document.createElement('button');
        var eliminar_button = document.createElement('button');
-       console.log(element);
        titulo.textContent = element.title;
+       console.log(element.title);
        titulo.className = 'list-group-item';
        div_buttons.className = 'btn-group';
        div_buttons.role = 'group';
@@ -27,8 +27,12 @@
        div_buttons.appendChild(eliminar_button);
        editar_button.addEventListener('click', function() {
          event.stopPropagation(); // Evita que el evento de clic se propague al elemento padre (el título)
-         window.location.href = 'aaaaa/';
-       });
+         window.location.href = 'cargar-recordatorio/' + element._id;
+        });
+        eliminar_button.addEventListener('click', function() {
+          event.stopPropagation();
+          window.location.href = 'eliminar-recordatorio/' + element._id;
+        });
        titulo.addEventListener('click', function() {
        window.location.href = 'cargar-recordatorio/' + element._id;
        });

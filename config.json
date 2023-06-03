@@ -1,4 +1,6 @@
 {
     "databaseURL": "mongodb://localhost:27017/mongo",
-    "PORT": 3000
+    "PORT": 3000,
+    "user": "correopruebaapp1232@gmail.com",
+    "pass": "bppkulqqfgflqypz"
 }

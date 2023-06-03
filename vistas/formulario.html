@@ -11,7 +11,8 @@
 <body>
   <div class="container">
     <h1>Ingrese los datos del recordatorio</h1>
-    <form method="post" action="/posted-new-reminder">
+    <form id="myform" method="post" action="/posted-new-reminder">
+      <input style="display:none" id="iddatos" name="iddatos"></input>
       <div class="form-group">
         <label for="titulo">Recordatorio:</label>
         <input type="text" class="form-control" id="titulo" name="titulo"required>
@@ -28,7 +29,7 @@
         <label for="email">Correo electrónico:</label>
         <input type="email" class="form-control" id="email" name = "email" required>
       </div>
-      <button type="submit" class="btn btn-primary" name="submit">Enviar</button>
+      <button  class="btn btn-primary" name="submit" id="env">Enviar</button>
 
     <div class="container">
       <button class="btn btn-dark btn-back" onclick="goBack()">Atrás</button>
@@ -51,16 +52,7 @@
         });
       </script>
 
-      <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
-        if(encodedData){
-        const decodedData = JSON.parse(decodeURIComponent(encodedData));
-        console.log(decodedData);
-        }else{
-          console.log('No data found');
-        }
-      </script>
+      <script src="scripts/load-reminder-formulario.js"></script>
 
     </form>
   </div>
