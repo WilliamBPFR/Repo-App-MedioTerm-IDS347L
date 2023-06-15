@@ -23,12 +23,6 @@ jobs:
     - name: Chequeo del Repositorio
       uses: actions/checkout@v3
 
-    - name: Configuración de Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
     - name: Install Docker
       run: |
         sudo apt-get remove moby-containerd containerd
@@ -41,8 +35,13 @@ jobs:
       run: docker run --name mongodb -p 27017:27017 -d mongo
 
     - name: Build Imagen del Docker
-      #run: docker run --name app -p 3000:3000 -d 
       run: docker build -t mongo .
+
+    - name: Configuración de Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
 
     - name: Instalación de Dependencias
       run: npm ci
