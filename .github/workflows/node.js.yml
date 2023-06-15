@@ -30,12 +30,12 @@ jobs:
         cache: 'npm'
 
     - name: Install Docker
-        run: |
-          sudo apt-get remove moby-containerd containerd
-          sudo apt-get remove moby-runc runc
-          sudo apt-get purge docker docker-engine docker.io containerd runc
-          sudo apt-get update
-          sudo apt-get install docker.io -y
+      run: |
+        sudo apt-get remove moby-containerd containerd
+        sudo apt-get remove moby-runc runc
+        sudo apt-get purge docker docker-engine docker.io containerd runc
+        sudo apt-get update
+        sudo apt-get install docker.io -y
 
     - name: Subir BD Docker
       run: docker run --name mongodb -p 27017:27017 -d mongo
