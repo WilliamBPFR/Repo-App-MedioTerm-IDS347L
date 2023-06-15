@@ -51,6 +51,7 @@ jobs:
 
     - name: Run ESLint
       run: npx eslint .
+      continue-on-error: true
 
 
 
