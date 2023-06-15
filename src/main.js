@@ -5,7 +5,7 @@ const vars = require("./vars");
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
 const path = require("path");
-const Reminder = require("./database");
+const Reminder = require("../database");
 const app = express();
 app.set("views", path.join(__dirname, "vistas"));
 app.set("view engine", "html");
