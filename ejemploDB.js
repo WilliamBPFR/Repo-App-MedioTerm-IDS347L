@@ -1,7 +1,7 @@
-const database = require('./database')
+const DATABASE = require('./database')
 
 async function example () {
-  const Nota = new database({})
+  const Nota = new DATABASE({})
 
   Nota.title = 'Juego'
   Nota.email = 'johnny.ventura@gmail.com'

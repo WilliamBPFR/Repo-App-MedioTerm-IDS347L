@@ -1,4 +1,3 @@
-const cron = require('node-cron')
 const nodemailer = require('nodemailer')
 const config = require('./config')
 // Configura la información de tu cuenta de correo electrónico
@@ -30,3 +29,5 @@ async function sendEmail (asunto, mensaje, destinatario) {
     }
   })
 }
+
+sendEmail('Hola', 'HOLA', 'HOLA')

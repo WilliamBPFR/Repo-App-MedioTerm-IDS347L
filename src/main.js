@@ -1,8 +1,8 @@
 const express = require('express')
-const body_parser = require('body-parser')
+const bodyParser = require('body-parser')
 const config = require('./config')
 const vars = require('./vars')
-const cron = require('node-cron')
+// const cron = require('node-cron')
 const nodemailer = require('nodemailer')
 const path = require('path')
 const Reminder = require('../database')
@@ -11,8 +11,8 @@ app.set('views', path.join(__dirname, 'vistas'))
 app.set('view engine', 'html')
 
 app.use(express.static(path.join(__dirname, 'vistas')))
-app.use(body_parser.urlencoded({ extended: true }))
-app.use(body_parser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use((req, res, next) => {
   console.log(req.method + ' : ' + req.url)
   next()
@@ -77,7 +77,7 @@ app.post('/posted-new-reminder', async (req, res, next) => {
   reminder.email = req.body.email
   reminder.message = req.body.descripcion
   reminder.fecha = req.body.fecha
-  if (req.body.id == undefined) {
+  if (req.body.id === undefined) {
     try {
       const product = await reminder.save()
       console.log(product)
@@ -99,7 +99,7 @@ async function updateReminder (reminder) {
     console.log(product)
   } catch (err) {
     console.log(err)
-    next(err)
+    // next(err)
   }
 }
 // Enviar los datos al cliente
@@ -109,7 +109,7 @@ app.get('/historial-data', async (req, res, next) => {
     res.json(reminders)
   } catch (err) {
     console.log(err)
-    next(err)
+    // next(err)
   }
 })
 
@@ -121,7 +121,7 @@ app.get('/cargar-recordatorio/:_id', async (req, res, next) => {
     res.redirect('/formulario.html?data=' + encodedData)
   } catch (err) {
     console.log(err)
-    next(err)
+    // next(err)
   }
 })
 

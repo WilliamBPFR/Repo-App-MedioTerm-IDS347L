@@ -7,29 +7,29 @@ xhr.onreadystatechange = function () {
     const parentElement = document.getElementById('lista')
     data.forEach(function (element) {
       const titulo = document.createElement('li')
-      const titulo_span = document.createElement('span')
-      const div_buttons = document.createElement('div')
-      const editar_button = document.createElement('button')
-      const eliminar_button = document.createElement('button')
+      const tituloSpan = document.createElement('span')
+      const divButtons = document.createElement('div')
+      const editarButton = document.createElement('button')
+      const eliminarButton = document.createElement('button')
       titulo.textContent = element.title
       console.log(element.title)
       titulo.className = 'list-group-item'
-      div_buttons.className = 'btn-group'
-      div_buttons.role = 'group'
-      editar_button.className = 'btn btn-primary btn-action'
-      editar_button.textContent = 'Editar'
-      eliminar_button.className = 'btn btn-danger btn-action'
-      eliminar_button.textContent = 'Eliminar'
+      divButtons.className = 'btn-group'
+      divButtons.role = 'group'
+      editarButton.className = 'btn btn-primary btn-action'
+      editarButton.textContent = 'Editar'
+      eliminarButton.className = 'btn btn-danger btn-action'
+      eliminarButton.textContent = 'Eliminar'
       parentElement.appendChild(titulo)
-      titulo.appendChild(titulo_span)
-      titulo.appendChild(div_buttons)
-      div_buttons.appendChild(editar_button)
-      div_buttons.appendChild(eliminar_button)
-      editar_button.addEventListener('click', function () {
+      titulo.appendChild(tituloSpan)
+      titulo.appendChild(divButtons)
+      divButtons.appendChild(editarButton)
+      divButtons.appendChild(eliminarButton)
+      editarButton.addEventListener('click', function () {
         event.stopPropagation() // Evita que el evento de clic se propague al elemento padre (el título)
         window.location.href = 'cargar-recordatorio/' + element._id
       })
-      eliminar_button.addEventListener('click', function () {
+      eliminarButton.addEventListener('click', function () {
         event.stopPropagation()
         window.location.href = 'eliminar-recordatorio/' + element._id
       })
