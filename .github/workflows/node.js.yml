@@ -20,12 +20,40 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Chequeo del Repositorio
+      uses: actions/checkout@v3
+
+    - name: Configuración de Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+
+    - name: Install Docker
+      run: |
+        sudo apt-get remove moby-containerd containerd
+        sudo apt-get remove moby-runc runc
+        sudo apt-get purge docker docker-engine docker.io containerd runc
+        sudo apt-get update
+        sudo apt-get install docker.io -y
+        sudo systemctl start docker
+
+    - name: Subir BD Docker
+      run: docker run --name mongodb -p 27017:27017 -d mongo
+
+    - name: Build Imagen del Docker
+      #run: docker run --name app -p 3000:3000 -d 
+      run: docker build -t mongo .
+
+    - name: Instalación de Dependencias
+      run: npm ci
+    
+    - name: Transpilación de Código
+      run: npx babel src --out-dir dist --presets=@babel/preset-env
+
+
+
+
+    # - run: npm ci
+    # - run: npm run build --if-present
+    # - run: npm test
