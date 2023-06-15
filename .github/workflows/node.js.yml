@@ -30,7 +30,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Docker
-        run: |
+        run: 
         sudo apt-get remove moby-containerd containerd
         sudo apt-get remove moby-runc runc
         sudo apt-get purge docker docker-engine docker.io containerd runc
