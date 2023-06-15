@@ -49,6 +49,9 @@ jobs:
     - name: Transpilación de Código
       run: npx babel src --out-dir dist --presets=@babel/preset-env
 
+    - name: Run ESLint
+      run: npx eslint .
+
 
 
 
