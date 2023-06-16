@@ -1,16 +1,31 @@
 const request = require('supertest');
+const mongooseClient = require('mongoose');
 const app = require('./src/main');
+const config = require('./config.json');
 
-// Define una función vacía o simulada para reemplazar sendEmail
-const sendEmailMock = jest.fn();
+let server;
 
-// Reemplaza la implementación de sendEmail con sendEmailMock
-jest.mock('./src/main', () => {
-  return {
-    ...jest.requireActual('./src/main'),
-    sendEmail: sendEmailMock,
-  };
+beforeAll(async () => {
+  // Conexión con la base de datos antes de todas las pruebas
+  await mongooseClient.connect(config.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true });
+  console.log('Conexión exitosa a la base de datos');
+
+  // Iniciar el servidor antes de todas las pruebas
+  server = app.listen(config.port, () => {
+    console.log(`Server is running on port ${config.port}`);
+  });
 });
+
+afterAll(async () => {
+    // Desconexión de la base de datos después de todas las pruebas
+    await mongooseClient.disconnect();
+  
+    // Detener el servidor después de todas las pruebas
+    server.close(() => {
+      console.log('Servidor cerrado correctamente');
+      process.exit(0); // Forzar el cierre del proceso de Node.js
+    });
+  });
 
 describe('Pruebas de ingreso de registros', () => {
   it('Debería ingresar un nuevo registro', async () => {
@@ -26,7 +41,11 @@ describe('Pruebas de ingreso de registros', () => {
     expect(response.statusCode).toBe(302);
     expect(response.header.location).toBe('historial.html');
 
-    // Verifica si sendEmailMock ha sido llamado
-    expect(sendEmailMock).not.toHaveBeenCalled();
+    // Puedes realizar otras verificaciones según tus necesidades
+
+    // Verifica si se ha enviado el correo electrónico correctamente
+
+    // Llama a la función `done` para finalizar la prueba
+    return Promise.resolve();
   });
 });

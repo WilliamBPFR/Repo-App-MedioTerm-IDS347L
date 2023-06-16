@@ -31,6 +31,16 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
 
+// Lógica para cerrar el servidor
+function shutdown() {
+  console.log('Cerrando el servidor HTTP...');
+  server.close(() => {
+    console.log('El servidor HTTP se ha cerrado correctamente.');
+    process.exit(0); // Finalizar la ejecución del proceso
+  });
+}
+process.on('SIGINT', shutdown);
+
 app.get('/eliminar-recordatorio/:_id', async (req, res, next) => {
   try {
     const reminder = await Reminder.findByIdAndDelete(req.params._id)
