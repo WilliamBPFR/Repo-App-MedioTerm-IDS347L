@@ -53,10 +53,10 @@ jobs:
       run: npx eslint .
       continue-on-error: true
 
-      - name: Configurar variables de entorno
-        env:
-          USER: ${{ secrets.USER }}
-          PASS: ${{ secrets.PASS }}
+    - name: Configurar variables de entorno
+      env:
+        USER: ${{ secrets.USER }}
+        PASS: ${{ secrets.PASS }}
 
     - name: Run Tests
       run: npm test
