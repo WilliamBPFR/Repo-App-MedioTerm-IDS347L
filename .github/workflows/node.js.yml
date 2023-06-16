@@ -58,8 +58,4 @@ jobs:
       continue-on-error: true
 
     - name: Run Tests
-      run: npm test
-
-     - name: Handle test result
-        if: ${{ steps.run-tests.outcome == 'success' }}
-        run: exit 0
+      run: npm test -- --exit
