@@ -1,16 +1,16 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const config = require('./config')
-const vars = require('./vars')
+const config = require('./../config')
+const vars = require('./../vars')
 // const cron = require('node-cron')
 const nodemailer = require('nodemailer')
 const path = require('path')
-const Reminder = require('../database')
+const Reminder = require('./../database')
 const app = express()
 app.set('views', path.join(__dirname, 'vistas'))
 app.set('view engine', 'html')
 
-app.use(express.static(path.join(__dirname, 'vistas')))
+app.use(express.static(path.join(__dirname, './../vistas')))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use((req, res, next) => {
@@ -33,7 +33,7 @@ app.get('/eliminar-recordatorio/:_id', async (req, res, next) => {
   try {
     const reminder = await Reminder.findByIdAndDelete(req.params._id)
     console.log(reminder)
-    res.redirect('/historial.html')
+    res.redirect('historial.html')
   } catch (err) {
     console.log(err)
     next(err)
@@ -116,14 +116,17 @@ app.get('/historial-data', async (req, res, next) => {
 app.get('/cargar-recordatorio/:_id', async (req, res, next) => {
   try {
     const reminders = await Reminder.findById(req.params._id)
-    console.log(reminders)
+    console.log("llegue")
     const encodedData = encodeURIComponent(JSON.stringify(reminders))
-    res.redirect('/formulario.html?data=' + encodedData)
+    const url = '/cargar-recordatorio/' + req.params._id;
+    const redirectUrl = req.originalUrl.replace(url, '') 
+    res.redirect('/'+redirectUrl + 'formulario.html?data=' + encodedData)
   } catch (err) {
     console.log(err)
     // next(err)
   }
 })
+
 
 /* app.route("/historial.html").get(async (req, res, next) => {
     try {
