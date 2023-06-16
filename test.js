@@ -16,16 +16,13 @@ beforeAll(async () => {
   });
 });
 
-afterAll(async () => {
-    // Desconexión de la base de datos después de todas las pruebas
-    await mongooseClient.disconnect();
-  
-    // Detener el servidor después de todas las pruebas
-    server.close(() => {
-      console.log('Servidor cerrado correctamente');
-      process.exit(0); // Forzar el cierre del proceso de Node.js
-    });
-  });
+afterEach(async () => {
+  // Desconexión de la base de datos después de todas las pruebas
+  await mongooseClient.disconnect();
+
+  // Detener el servidor después de todas las pruebas
+  server.close();
+});
 
 describe('Pruebas de ingreso de registros', () => {
   it('Debería ingresar un nuevo registro', async () => {
