@@ -1,6 +1,17 @@
 const request = require('supertest');
 const app = require('./src/main');
 
+// Define una función vacía o simulada para reemplazar sendEmail
+const sendEmailMock = jest.fn();
+
+// Reemplaza la implementación de sendEmail con sendEmailMock
+jest.mock('./src/main', () => {
+  return {
+    ...jest.requireActual('./src/main'),
+    sendEmail: sendEmailMock,
+  };
+});
+
 describe('Pruebas de ingreso de registros', () => {
   it('Debería ingresar un nuevo registro', async () => {
     const response = await request(app)
@@ -12,13 +23,10 @@ describe('Pruebas de ingreso de registros', () => {
         fecha: '2023-06-15',
       });
 
-    expect(response.statusCode).toBe(302); // Verifica el código de estado esperado
-    expect(response.header.location).toBe('historial.html'); // Verifica la redirección
+    expect(response.statusCode).toBe(302);
+    expect(response.header.location).toBe('historial.html');
 
-    // Puedes realizar otras verificaciones según tus necesidadesno
-    // Por ejemplo, puedes verificar si el registro se guarda correctamente en la base de datos
-    // y si se envía el correo electrónico correspondiente.
-
-    // Verifica si se ha enviado el correo electrónico correctamente
+    // Verifica si sendEmailMock ha sido llamado
+    expect(sendEmailMock).not.toHaveBeenCalled();
   });
 });
