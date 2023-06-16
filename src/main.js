@@ -177,3 +177,5 @@ app.get('/cargar-recordatorio/:_id', async (req, res, next) => {
     message: String,
     fecha: Date,
   }); */
+
+  module.exports = app;
