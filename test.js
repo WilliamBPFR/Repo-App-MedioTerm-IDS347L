@@ -18,5 +18,7 @@ describe('Pruebas de ingreso de registros', () => {
     // Puedes realizar otras verificaciones según tus necesidadesno
     // Por ejemplo, puedes verificar si el registro se guarda correctamente en la base de datos
     // y si se envía el correo electrónico correspondiente.
+
+    // Verifica si se ha enviado el correo electrónico correctamente
   });
 });

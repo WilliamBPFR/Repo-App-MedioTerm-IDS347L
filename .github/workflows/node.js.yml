@@ -59,3 +59,7 @@ jobs:
 
     - name: Run Tests
       run: npm test
+
+     - name: Handle test result
+        if: ${{ steps.run-tests.outcome == 'success' }}
+        run: exit 0
