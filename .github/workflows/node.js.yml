@@ -13,11 +13,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    - name: Configurar variables de entorno
-      env:
-        USER: ${{ secrets.USER }}
-        PASS: ${{ secrets.PASS }}
         
     strategy:
       matrix:
@@ -27,6 +22,10 @@ jobs:
     steps:
     - name: Chequeo del Repositorio
       uses: actions/checkout@v3
+
+      env:
+        USER: ${{ secrets.USER }}
+        PASS: ${{ secrets.PASS }}
 
     - name: Install Docker
       run: |

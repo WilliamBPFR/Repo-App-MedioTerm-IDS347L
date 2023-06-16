@@ -1,7 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const config = require('./../config')
-const vars = require('./../vars')
+//const vars = require('./../vars')
+const dotenv = require('dotenv')
+dotenv.config();
 // const cron = require('node-cron')
 const nodemailer = require('nodemailer')
 const path = require('path')
@@ -44,8 +46,8 @@ app.get('/eliminar-recordatorio/:_id', async (req, res, next) => {
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: vars.user,
-    pass: vars.pass
+    user: process.env.USER,
+    pass: process.env.PASS
   },
   tls: {
     rejectUnauthorized: false
@@ -55,7 +57,7 @@ const transporter = nodemailer.createTransport({
 // Función para enviar el correo electrónico
 async function sendEmail (asunto, mensaje, destinatario) {
   const mailOptions = {
-    from: vars.user,
+    from: process.env.USER,
     to: destinatario,
     subject: asunto,
     text: mensaje
