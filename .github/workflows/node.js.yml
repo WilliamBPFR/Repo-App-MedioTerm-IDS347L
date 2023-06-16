@@ -58,4 +58,4 @@ jobs:
       continue-on-error: true
 
     - name: Run Tests
-      run: npm test -- --exit
+      run: npm test
