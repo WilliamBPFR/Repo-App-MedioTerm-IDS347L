@@ -1,5 +1,5 @@
 const mongooseClient = require('mongoose')
-const config = require('./config.json')
+const config = require('./../config.json')
 mongooseClient.connect(config.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Conexión exitosa a la base de datos')
