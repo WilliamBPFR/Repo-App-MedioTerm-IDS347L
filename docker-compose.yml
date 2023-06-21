@@ -8,3 +8,13 @@ services:
       - 27017:27017
     volumes:
       - ./data:/data/db
+  web:
+    image: williamferreira1207/proy-final:1.0
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+  db:
+    image: williamferreira1207/db-proy-final:1.0
+    volumes:
+      - ./data:/data/db
