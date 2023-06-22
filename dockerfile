@@ -18,4 +18,4 @@ RUN npm install
 EXPOSE 3000
 
 # The default command to run when the container starts.
-CMD [ "node", "main.js" ]
+CMD [ "npm", "start" ]
