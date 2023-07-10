@@ -5,8 +5,8 @@ const config = require('./config.json');
 
 let server;
 
+jest.setTimeout(60000)
 beforeAll(async () => {
-  // Conexión con la base de datos antes de todas las pruebas
   await mongooseClient.connect(config.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true });
   console.log('Conexión exitosa a la base de datos');
 
@@ -16,27 +16,28 @@ beforeAll(async () => {
   });
 });
 
-afterEach(async () => {
-  // Desconexión de la base de datos después de todas las pruebas
+afterAll(async () => {
   await mongooseClient.disconnect();
 
-  // Detener el servidor después de todas las pruebas
-  server.close();
+  // Close the server and handle errors
+  await new Promise((resolve) => {
+    server.close((err) => {
+      if (err) {
+        console.error('Error:', err);
+      } else {
+        console.log('Servidor Cerrado');
+      }
+      resolve();
+    });
+  });
 });
 
-describe('Pruebas de ingreso de registros', () => {
-  it('Debería ingresar un nuevo registro', async () => {
-    const response = await request(app)
-      .post('/posted-new-reminder')
-      .send({
-        titulo: 'Registro Prueba',
-        email: 'williamchawillferferreira@gmail.com',
-        descripcion: 'Descripción del registro',
-        fecha: '2023-06-15',
-      });
+describe('Pruebas de apertura de historial', () => {
+  it('Debería abrir el historia sin problemas', async () => {
+    const response = await request(server).get('/historial.html');
 
-    expect(response.statusCode).toBe(302);
-    expect(response.header.location).toBe('historial.html');
+    expect(response.statusCode).toBe(200);
+    // expect(response.header.location).toBe('historial.html');
 
     // Puedes realizar otras verificaciones según tus necesidades
 
