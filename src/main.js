@@ -1,32 +1,98 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const config = require('./../config')
-//const vars = require('./../vars')
 const dotenv = require('dotenv')
 dotenv.config();
-// const cron = require('node-cron')
-const nodemailer = require('nodemailer')
-const path = require('path')
+const { graphql, buildSchema } = require('graphql');
+const { graphqlHTTP } = require('express-graphql');
 const Reminder = require('./../db/database')
 const app = express()
-app.set('views', path.join(__dirname, 'vistas'))
-app.set('view engine', 'html')
 
-app.use(express.static(path.join(__dirname, './../vistas')))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use((req, res, next) => {
-  console.log(req.method + ' : ' + req.url)
-  next()
-})
 
-app.get('/', (req, res, next) => {
-  res.redirect('index.html')
-})
+// Define your GraphQL schema
+const schema = buildSchema(`
+  type Reminder {
+    _id: ID!
+    title: String!
+    email: String!
+    message: String!
+    fecha: String!
+  }
+
+  type Query {
+    getReminder(_id: ID!): Reminder
+    getAllReminders: [Reminder]
+  }
+
+  type Mutation {
+    createReminder(title: String!, email: String!, message: String!, fecha: String!): Reminder
+    updateReminder(_id: ID!, title: String!, email: String!, message: String!, fecha: String!): Reminder
+    deleteReminder(_id: ID!): Boolean
+  }
+`);
+
+// Define your resolvers
+const root = {
+  getReminder: async ({ _id }) => {
+    try {
+      const reminder = await Reminder.findById(_id);
+      return reminder;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  },
+  getAllReminders: async () => {
+    try {
+      const reminders = await Reminder.find({});
+      return reminders;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  },
+  createReminder: async ({ title, email, message, fecha }) => {
+    try {
+      const reminder = new Reminder({ title, email, message, fecha });
+      const savedReminder = await reminder.save();
+      return savedReminder;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  },
+  updateReminder: async ({ _id, title, email, message, fecha }) => {
+    try {
+      const updatedReminder = await Reminder.findByIdAndUpdate(_id, { title, email, message, fecha });
+      return updatedReminder;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  },
+  deleteReminder: async ({ _id }) => {
+    try {
+      await Reminder.findByIdAndDelete(_id);
+      return true;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  },
+};
+
+// GraphQL endpoint
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true, // Enable GraphiQL for testing
+}));
+
+// Other app configurations...
 
 const port = config.PORT
-console.log(port)
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
@@ -41,103 +107,69 @@ function shutdown() {
 }
 process.on('SIGINT', shutdown);
 
+// Resto del código de la aplicación...
+
+// Eliminar un recordatorio por su ID
 app.get('/eliminar-recordatorio/:_id', async (req, res, next) => {
   try {
-    const reminder = await Reminder.findByIdAndDelete(req.params._id)
-    console.log(reminder)
-    res.redirect('historial.html')
+    const { _id } = req.params;
+    await graphql(schema, `mutation { deleteReminder(_id: "${_id}") }`, root);
+    console.log('Recordatorio eliminado:', _id);
+    res.redirect('historial.html');
   } catch (err) {
-    console.log(err)
-    next(err)
+    console.log(err);
+    next(err);
   }
-}
-)
+});
 
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: process.env.USER,
-    pass: process.env.PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-})
-
-// Función para enviar el correo electrónico
-async function sendEmail (asunto, mensaje, destinatario) {
-  const mailOptions = {
-    from: process.env.USER,
-    to: destinatario,
-    subject: asunto,
-    text: mensaje
-  }
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log('Error al enviar el correo electrónico:', error)
-    } else {
-      console.log('Correo electrónico enviado:', info.response)
-    }
-  })
-}
-
+// Crear o actualizar un recordatorio
 app.post('/posted-new-reminder', async (req, res, next) => {
-  // console.log(req.body);
-  const reminder = new Reminder({})
-  reminder.title = req.body.titulo
-  reminder.email = req.body.email
-  reminder.message = req.body.descripcion
-  reminder.fecha = req.body.fecha
-  if (req.body.id === undefined) {
-    try {
-      const product = await reminder.save()
-      console.log(product)
-      sendEmail(reminder.title, reminder.message, reminder.email)
-    } catch (err) {
-      console.log(err)
-      next(err)
-    }
-  } else {
-    reminder._id = req.body.id
-    updateReminder(reminder)
-  }
-  res.redirect('historial.html')
-})
-
-async function updateReminder (reminder) {
+  const { titulo, email, descripcion, fecha, id } = req.body;
   try {
-    const product = await Reminder.findByIdAndUpdate(reminder._id, reminder)
-    console.log(product)
+    if (id === undefined) {
+      // Crear nuevo recordatorio
+      const result = await graphql(schema, `mutation { createReminder(title: "${titulo}", email: "${email}", message: "${descripcion}", fecha: "${fecha}") { _id } }`, root);
+      console.log('Nuevo recordatorio creado:', result.data.createReminder._id);
+      sendEmail(titulo, descripcion, email);
+    } else {
+      // Actualizar un recordatorio existente
+      const result = await graphql(schema, `mutation { updateReminder(_id: "${id}", title: "${titulo}", email: "${email}", message: "${descripcion}", fecha: "${fecha}") { _id } }`, root);
+      console.log('Recordatorio actualizado:', result.data.updateReminder._id);
+    }
   } catch (err) {
-    console.log(err)
-    // next(err)
+    console.log(err);
+    next(err);
   }
-}
-// Enviar los datos al cliente
+  res.redirect('historial.html');
+});
+
+// Obtener todos los recordatorios
 app.get('/historial-data', async (req, res, next) => {
   try {
-    const reminders = await Reminder.find({})
-    res.json(reminders)
+    const result = await graphql(schema, `query { getAllReminders { _id, title, email, message, fecha } }`, root);
+    res.json(result.data.getAllReminders);
   } catch (err) {
-    console.log(err)
-    // next(err)
+    console.log(err);
+    next(err);
   }
-})
+});
 
+// Obtener un recordatorio por su ID y redireccionar
 app.get('/cargar-recordatorio/:_id', async (req, res, next) => {
   try {
-    const reminders = await Reminder.findById(req.params._id)
-    console.log("llegue")
-    const encodedData = encodeURIComponent(JSON.stringify(reminders))
-    const url = '/cargar-recordatorio/' + req.params._id;
-    const redirectUrl = req.originalUrl.replace(url, '') 
-    res.redirect('/'+redirectUrl + 'formulario.html?data=' + encodedData)
+    const { _id } = req.params;
+    const result = await graphql(schema, `query { getReminder(_id: "${_id}") { _id } }`, root);
+    console.log("llegue");
+    const encodedData = encodeURIComponent(JSON.stringify(result.data.getReminder));
+    const url = '/cargar-recordatorio/' + _id;
+    const redirectUrl = req.originalUrl.replace(url, '');
+    res.redirect('/' + redirectUrl + 'formulario.html?data=' + encodedData);
   } catch (err) {
-    console.log(err)
-    // next(err)
+    console.log(err);
+    next(err);
   }
-})
+});
+
 
 
 /* app.route("/historial.html").get(async (req, res, next) => {
