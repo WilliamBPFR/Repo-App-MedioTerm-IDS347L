@@ -1,4 +1,6 @@
 const express = require('express')
+const nodemailer = require('nodemailer')
+const path = require('path')
 const bodyParser = require('body-parser')
 const config = require('./../config')
 const dotenv = require('dotenv')
@@ -7,9 +9,17 @@ const { graphql, buildSchema } = require('graphql');
 const { graphqlHTTP } = require('express-graphql');
 const Reminder = require('./../db/database')
 const app = express()
+app.set('view engine', 'html')
+//app.set('view engine', 'ejs');
 
+app.use(express.static(path.join(__dirname, './../vistas')))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use((req, res, next) => {
+  console.log(req.method + ' : ' + req.url)
+  next()
+})
+app.set('views', path.join(__dirname, 'vistas'))
 
 // Define your GraphQL schema
 const schema = buildSchema(`
@@ -121,7 +131,34 @@ app.get('/eliminar-recordatorio/:_id', async (req, res, next) => {
     next(err);
   }
 });
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.USER,
+    pass: process.env.PASS
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+})
 
+// Función para enviar el correo electrónico
+async function sendEmail (asunto, mensaje, destinatario) {
+  const mailOptions = {
+    from: process.env.USER,
+    to: destinatario,
+    subject: asunto,
+    text: mensaje
+  }
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error al enviar el correo electrónico:', error)
+    } else {
+      console.log('Correo electrónico enviado:', info.response)
+    }
+  })
+}
 // Crear o actualizar un recordatorio
 app.post('/posted-new-reminder', async (req, res, next) => {
   const { titulo, email, descripcion, fecha, id } = req.body;
@@ -142,6 +179,10 @@ app.post('/posted-new-reminder', async (req, res, next) => {
   }
   res.redirect('historial.html');
 });
+
+app.get('/', (req, res, next) => {
+  res.redirect('index.html')
+})
 
 // Obtener todos los recordatorios
 app.get('/historial-data', async (req, res, next) => {
